@@ -2,12 +2,14 @@ import sys
 
 from src.audio import extract_vocals
 from src.transcriber import transcribe
-from src.translator import translate_to_ptbr
+from src.translator import (
+    normalize_lyrics,
+    translate_to_ptbr
+)
 from src.exporter import (
     save_txt,
     save_json
 )
-
 
 VALID_MODES = [
     "fast",
@@ -20,19 +22,11 @@ def main():
 
     if len(sys.argv) < 2:
 
-        print(
-            "Uso:"
-        )
-
-        print(
-            "python main.py "
-            "musica.mp3"
-        )
-
-        print(
-            "python main.py "
-            "musica.mp3 quality"
-        )
+        print("Uso:")
+        print("python main.py <arquivo.mp3>")
+        print("python main.py <arquivo.mp3> fast")
+        print("python main.py <arquivo.mp3> quality")
+        print("python main.py <arquivo.mp3> extreme")
 
         return
 
@@ -47,7 +41,8 @@ def main():
     if mode not in VALID_MODES:
 
         print(
-            "Modo inválido."
+            "Modo inválido.\n"
+            "Use: fast, quality ou extreme"
         )
 
         return
@@ -86,13 +81,29 @@ def main():
     try:
 
         print(
+            "Corrigindo transcrição..."
+        )
+
+        fixed_lyrics = normalize_lyrics(
+            lyrics
+        )
+
+        save_txt(
+            fixed_lyrics,
+            "lyrics_fixed.txt"
+        )
+
+        save_json(
+            fixed_lyrics,
+            "lyrics_fixed.json"
+        )
+
+        print(
             "Traduzindo..."
         )
 
-        translated = (
-            translate_to_ptbr(
-                lyrics
-            )
+        translated = translate_to_ptbr(
+            fixed_lyrics
         )
 
         save_txt(
@@ -108,7 +119,7 @@ def main():
     except Exception as e:
 
         print(
-            "Ollama indisponível:"
+            "Erro ao usar Ollama:"
         )
 
         print(e)
