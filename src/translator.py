@@ -1,18 +1,20 @@
 import ollama
 
-
-def translate_to_ptbr(text):
+def normalize_lyrics(text):
 
     prompt = f"""
-Traduza a letra abaixo para português brasileiro.
+Você receberá uma transcrição de música.
 
-Regras:
-- Preserve a estrutura dos versos.
-- Preserve repetições.
-- Não explique nada.
-- Retorne apenas a tradução.
+A música pode misturar idiomas.
 
-Letra:
+Corrija apenas erros óbvios de reconhecimento.
+
+Não invente versos.
+Não complete trechos ausentes.
+
+Retorne apenas a letra corrigida.
+
+Texto:
 
 {text}
 """

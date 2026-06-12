@@ -1,24 +1,77 @@
 import sys
 
+from src.audio import extract_vocals
 from src.transcriber import transcribe
 from src.translator import translate_to_ptbr
-from src.exporter import save_txt, save_json
+from src.exporter import (
+    save_txt,
+    save_json
+)
+
+
+VALID_MODES = [
+    "fast",
+    "quality",
+    "extreme"
+]
 
 
 def main():
 
-    if len(sys.argv) != 2:
-        print("Uso:")
-        print("python main.py musica.mp3")
+    if len(sys.argv) < 2:
+
+        print(
+            "Uso:"
+        )
+
+        print(
+            "python main.py "
+            "musica.mp3"
+        )
+
+        print(
+            "python main.py "
+            "musica.mp3 quality"
+        )
+
         return
 
     music = sys.argv[1]
 
-    print("Transcrevendo áudio...")
+    mode = (
+        sys.argv[2]
+        if len(sys.argv) >= 3
+        else "quality"
+    )
 
-    lyrics = transcribe(music)
+    if mode not in VALID_MODES:
 
-    print("Salvando letra original...")
+        print(
+            "Modo inválido."
+        )
+
+        return
+
+    audio_source = music
+
+    if mode == "extreme":
+
+        print(
+            "Extraindo vocais..."
+        )
+
+        audio_source = extract_vocals(
+            music
+        )
+
+    print(
+        "Transcrevendo..."
+    )
+
+    lyrics = transcribe(
+        audio_source,
+        mode
+    )
 
     save_txt(
         lyrics,
@@ -32,10 +85,14 @@ def main():
 
     try:
 
-        print("Traduzindo para PT-BR...")
+        print(
+            "Traduzindo..."
+        )
 
-        translated = translate_to_ptbr(
-            lyrics
+        translated = (
+            translate_to_ptbr(
+                lyrics
+            )
         )
 
         save_txt(
@@ -48,17 +105,17 @@ def main():
             "lyrics_ptbr.json"
         )
 
-        print("Tradução concluída.")
-
     except Exception as e:
 
         print(
-            "Falha ao usar Ollama:"
+            "Ollama indisponível:"
         )
 
         print(e)
 
-    print("Concluído.")
+    print(
+        "Concluído."
+    )
 
 
 if __name__ == "__main__":
