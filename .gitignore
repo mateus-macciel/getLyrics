@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+
+output/
+input/
+
+separated/
+
+*.wav
+*.mp3
+*.flac
+*.m4a
+
+*.pyc
